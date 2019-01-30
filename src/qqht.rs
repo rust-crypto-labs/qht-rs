@@ -1,5 +1,6 @@
 use crate::filter::Filter;
 use crate::element::Element;
+use crate::basicqht::BasicQHT;
 
 pub use rand::rngs::StdRng;
 pub use rand::{FromEntropy, Rng};
@@ -40,9 +41,8 @@ pub struct DQuotientHashTable {
     rng: StdRng,
 }
 
-/// QHTcd implementation
 impl DQuotientHashTable {
-    /// Returns a a newly created `DQuotientHashTable` or panics
+        /// Returns a a newly created `DQuotientHashTable` or panics
     ///
     /// This function takes as arguments:
     /// * `memory_size`: allocated memory for the filter, in bits
@@ -52,7 +52,7 @@ impl DQuotientHashTable {
     /// Parameters should be chosen in a consistent way, namely so that `memory_size` >= `n_buckets` * `fingerprint_size`
     /// # Example
     /// ```rust
-    /// use qht::DQuotientHashTable;
+    /// use qht::{DQuotientHashTable,BasicQHT};
     /// let f = DQuotientHashTable::new(1024, 1, 3);
     /// ```
     pub fn new(memory_size: usize, n_buckets: usize, fingerprint_size: usize) -> Self {
@@ -90,6 +90,26 @@ impl DQuotientHashTable {
         }
     }
 
+    // Returns a random bucket
+    fn get_random_bucket(&mut self) -> usize {
+        self.rng.gen_range(0, self.n_buckets)
+    }
+
+    /// Inserts the fingerprirnt in the first empty bucket
+    fn insert_empty(&mut self, address: usize, fingerprint: Fingerprint) -> bool {
+        for idx in 0..self.n_buckets {
+            if self.get_fingerprint_from_bucket(address, idx) == 0 {
+                self.insert_fingerprint_in_bucket(address, idx, fingerprint);
+                return true;
+            }
+        }
+        false
+    }
+}
+
+/// QHTcd implementation
+impl BasicQHT for DQuotientHashTable {
+
     /// Retrieves a fingerprint from a given bucket (provided as an `address` and `bucket_number`
     fn get_fingerprint_from_bucket(&self, address: usize, bucket_number: usize) -> Fingerprint {
         let offset = (address * self.n_buckets + bucket_number) * self.fingerprint_size;
@@ -120,22 +140,6 @@ impl DQuotientHashTable {
         false
     }
 
-    // Returns a random bucket
-    fn get_random_bucket(&mut self) -> usize {
-        self.rng.gen_range(0, self.n_buckets)
-    }
-
-    /// Inserts the fingerprirnt in the first empty bucket
-    fn insert_empty(&mut self, address: usize, fingerprint: Fingerprint) -> bool {
-        for idx in 0..self.n_buckets {
-            if self.get_fingerprint_from_bucket(address, idx) == 0 {
-                self.insert_fingerprint_in_bucket(address, idx, fingerprint);
-                return true;
-            }
-        }
-        false
-    }
-
     /// Obtains an element's fingerprint
     fn get_fingerprint(&self, e: Element) -> Fingerprint {
         let mut f = e;
@@ -155,7 +159,7 @@ impl Filter for DQuotientHashTable {
     ///
     /// # Example
     /// ```rust
-    /// use qht::{Element, Filter, DQuotientHashTable};
+    /// use qht::{Element, Filter, DQuotientHashTable, BasicQHT};
     /// let f = DQuotientHashTable::new(1024, 1, 3);
     /// let e = Element { value: 1234 };
     /// assert!( !f.lookup(e) ); // The filter is empty
@@ -172,7 +176,7 @@ impl Filter for DQuotientHashTable {
     ///
     /// # Example
     /// ```rust
-    /// use qht::{Element,Filter, DQuotientHashTable};
+    /// use qht::{Element,Filter, DQuotientHashTable, BasicQHT};
     /// let mut f = DQuotientHashTable::new(1024, 1, 3);
     /// let e = Element { value: 1234 };
     /// let was_present = f.insert(e);

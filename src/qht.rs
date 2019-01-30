@@ -1,5 +1,6 @@
 use crate::filter::Filter;
 use crate::element::Element;
+use crate::basicqht::BasicQHT;
 
 pub use rand::rngs::StdRng;
 pub use rand::{FromEntropy, Rng};
@@ -40,7 +41,6 @@ pub struct QuotientHashTable {
     rng: StdRng,
 }
 
-/// QHTc implementation
 impl QuotientHashTable {
     /// Returns a newly created `QuotientHashTable` or panics
     ///
@@ -53,7 +53,7 @@ impl QuotientHashTable {
     ///
     /// # Example
     /// ```rust
-    /// use qht::QuotientHashTable;
+    /// use qht::{QuotientHashTable, BasicQHT};
     /// let f = QuotientHashTable::new(1024, 1, 3);
     /// ```
     ///
@@ -91,6 +91,25 @@ impl QuotientHashTable {
             rng,
         }
     }
+    /// Returns a randomly chosen bucket
+    fn get_random_bucket(&mut self) -> usize {
+        self.rng.gen_range(0, self.n_buckets)
+    }
+
+    /// Inserts the fingerprint in the first empty bucket
+    fn insert_empty(&mut self, address: usize, fingerprint: Fingerprint) -> bool {
+        for idx in 0..self.n_buckets {
+            if self.get_fingerprint_from_bucket(address, idx) == 0 {
+                self.insert_fingerprint_in_bucket(address, idx, fingerprint);
+                return true;
+            }
+        }
+        false
+    }
+}
+
+/// QHTc implementation
+impl BasicQHT for QuotientHashTable {
 
     /// Retrieves a fingerprint from a given bucket (provided as an `address` and `bucket_number`
     fn get_fingerprint_from_bucket(&self, address: usize, bucket_number: usize) -> Fingerprint {
@@ -122,22 +141,6 @@ impl QuotientHashTable {
         false
     }
 
-    /// Returns a randomly chosen bucket
-    fn get_random_bucket(&mut self) -> usize {
-        self.rng.gen_range(0, self.n_buckets)
-    }
-
-    /// Inserts the fingerprint in the first empty bucket
-    fn insert_empty(&mut self, address: usize, fingerprint: Fingerprint) -> bool {
-        for idx in 0..self.n_buckets {
-            if self.get_fingerprint_from_bucket(address, idx) == 0 {
-                self.insert_fingerprint_in_bucket(address, idx, fingerprint);
-                return true;
-            }
-        }
-        false
-    }
-
     /// Obtains an element's fingerprint
     fn get_fingerprint(&self, e: Element) -> Fingerprint {
         let mut f = e;
@@ -157,7 +160,7 @@ impl Filter for QuotientHashTable {
     ///
     /// # Example
     /// ```rust
-    /// use qht::{Element, Filter, QuotientHashTable};
+    /// use qht::{Element, Filter, QuotientHashTable, BasicQHT};
     /// let f = QuotientHashTable::new(1024, 1, 3);
     /// let e = Element { value: 1234 };
     /// assert!( !f.lookup(e) ); // The filter is empty
@@ -173,7 +176,7 @@ impl Filter for QuotientHashTable {
     /// Note: In this implementation, if the element is already present, it is not inserted
     /// # Example
     /// ```rust
-    /// use qht::{Element,Filter, QuotientHashTable};
+    /// use qht::{Element,Filter, QuotientHashTable, BasicQHT};
     /// let mut f = QuotientHashTable::new(1024, 1, 3);
     /// let e = Element { value: 1234 };
     /// let was_present = f.insert(e);

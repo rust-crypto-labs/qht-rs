@@ -1,5 +1,6 @@
 use crate::filter::Filter;
 use crate::element::Element;
+use crate::basicqht::BasicQHT;
 
 pub use rand::rngs::StdRng;
 pub use rand::{FromEntropy, Rng};
@@ -37,9 +38,8 @@ pub struct DQQuotientHashTable {
     qht: DenseBitSetExtended,
 }
 
-/// qQHTcd implementation
 impl DQQuotientHashTable {
-    /// Returns a a newly created `DQQuotientHashTable` or panics
+        /// Returns a a newly created `DQQuotientHashTable` or panics
     ///
     /// This function takes as arguments:
     /// * `memory_size`: allocated memory for the filter, in bits
@@ -50,10 +50,9 @@ impl DQQuotientHashTable {
     ///
     /// # Example
     /// ```rust
-    /// use qht::DQQuotientHashTable;
+    /// use qht::{DQQuotientHashTable,BasicQHT};
     /// let f = DQQuotientHashTable::new(1024, 1, 3);
     /// ```
-
     pub fn new(memory_size: usize, n_buckets: usize, fingerprint_size: usize) -> Self {
         if fingerprint_size > FINGERPRINT_SIZE_LIMIT {
             panic!("[qQHTcd Filter] Incorrect parameters, fingerprint_size cannot exceed 8.");
@@ -83,6 +82,21 @@ impl DQQuotientHashTable {
             qht,
         }
     }
+
+    fn insert_fingerprint_in_last_bucket(&mut self, address: usize, fingerprint: Fingerprint) {
+        for prev in 0..(self.n_buckets - 1) {
+            let idx = prev + 1;
+            let fg = self.get_fingerprint_from_bucket(address, idx);
+            self.insert_fingerprint_in_bucket(address, prev, fg);
+        }
+        let last_bucket = self.n_buckets - 1;
+        self.insert_fingerprint_in_bucket(address, last_bucket, fingerprint)
+    }
+
+}
+
+/// qQHTcd implementation
+impl BasicQHT for DQQuotientHashTable {
 
     fn get_fingerprint_from_bucket(&self, address: usize, bucket_number: usize) -> Fingerprint {
         let offset = (address * self.n_buckets + bucket_number) * self.fingerprint_size;
@@ -122,15 +136,6 @@ impl DQQuotientHashTable {
         fingerprint
     }
 
-    fn insert_fingerprint_in_last_bucket(&mut self, address: usize, fingerprint: Fingerprint) {
-        for prev in 0..(self.n_buckets - 1) {
-            let idx = prev + 1;
-            let fg = self.get_fingerprint_from_bucket(address, idx);
-            self.insert_fingerprint_in_bucket(address, prev, fg);
-        }
-        let last_bucket = self.n_buckets - 1;
-        self.insert_fingerprint_in_bucket(address, last_bucket, fingerprint)
-    }
 }
 
 impl Filter for DQQuotientHashTable {
@@ -138,7 +143,7 @@ impl Filter for DQQuotientHashTable {
     ///
     /// # Example
     /// ```rust
-    /// use qht::{Element, Filter, DQQuotientHashTable};
+    /// use qht::{Element, Filter, DQQuotientHashTable, BasicQHT};
     /// let f = DQQuotientHashTable::new(1024, 1, 3);
     /// let e = Element { value: 1234 };
     /// assert!( !f.lookup(e) ); // The filter is empty
@@ -156,7 +161,7 @@ impl Filter for DQQuotientHashTable {
     /// Note: The new element is inserted in the last bucket (not a random bucket)
     /// # Example
     /// ```rust
-    /// use qht::{Element,Filter, DQQuotientHashTable};
+    /// use qht::{Element,Filter, DQQuotientHashTable, BasicQHT};
     /// let mut f = DQQuotientHashTable::new(1024, 1, 3);
     /// let e = Element { value: 1234 };
     /// let was_present = f.insert(e);
