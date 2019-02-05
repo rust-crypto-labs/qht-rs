@@ -1,6 +1,6 @@
-use crate::filter::Filter;
+use crate::basicqht::{BasicQHT, Fingerprint};
 use crate::element::Element;
-use crate::basicqht::BasicQHT;
+use crate::filter::Filter;
 
 pub use rand::rngs::StdRng;
 pub use rand::{FromEntropy, Rng};
@@ -12,7 +12,6 @@ pub use rust_dense_bitset::DenseBitSetExtended;
 // --------------------------------------------------------------------------------
 // Configuration
 
-type Fingerprint = u64;
 const FINGERPRINT_SIZE_LIMIT: usize = 8;
 
 // --------------------------------------------------------------------------------
@@ -108,52 +107,7 @@ impl QuotientHashTable {
     }
 }
 
-/// QHTc implementation
-impl BasicQHT for QuotientHashTable {
-
-    /// Retrieves a fingerprint from a given bucket (provided as an `address` and `bucket_number`
-    fn get_fingerprint_from_bucket(&self, address: usize, bucket_number: usize) -> Fingerprint {
-        let offset = (address * self.n_buckets + bucket_number) * self.fingerprint_size;
-
-        self.qht.extract_u64(offset, self.fingerprint_size)
-    }
-
-    /// Inserts a fingerprint in a given buffer (provided as an `address` and `bucket_number`
-    fn insert_fingerprint_in_bucket(
-        &mut self,
-        address: usize,
-        bucket_number: usize,
-        fingerprint: Fingerprint,
-    ) {
-        let offset = (address * self.n_buckets + bucket_number) * self.fingerprint_size;
-
-        self.qht
-            .insert_u64(fingerprint, offset, self.fingerprint_size);
-    }
-
-    /// Checks whether a given fingerprint belongs to a given bucket
-    fn in_cell(&self, address: usize, fingerprint: Fingerprint) -> bool {
-        for idx in 0..self.n_buckets {
-            if self.get_fingerprint_from_bucket(address, idx) == fingerprint {
-                return true;
-            }
-        }
-        false
-    }
-
-    /// Obtains an element's fingerprint
-    fn get_fingerprint(&self, e: Element) -> Fingerprint {
-        let mut f = e;
-        let mut fingerprint = 0;
-
-        while fingerprint == 0 {
-            let v = f.get_hash(2);
-            fingerprint = (v % self.pow_fingerprint_size) as Fingerprint;
-            f.value += 1;
-        }
-        fingerprint
-    }
-}
+impl_basicqht!(QuotientHashTable);
 
 impl Filter for QuotientHashTable {
     /// Performs a lookup for the provided element
