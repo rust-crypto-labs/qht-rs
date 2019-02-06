@@ -1,12 +1,12 @@
-use crate::element::Element;
+pub use std::hash::{Hash, Hasher};
 // --------------------------------------------------------------------------------
 // Filter
 
 /// A `Filter` provides duplicate detection capabilities
 pub trait Filter {
     /// Performs a lookup for the provided element
-    fn lookup(&self, e: Element) -> bool;
+    fn lookup(&self, e: impl Hash) -> bool;
 
     /// Performs a lookup for the provided element and inserts it
-    fn insert(&mut self, e: Element) -> bool;
+    fn insert(&mut self, e: impl Hash) -> bool;
 }

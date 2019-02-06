@@ -1,5 +1,6 @@
-use crate::element::Element;
 use crate::filter::Filter;
+pub use std::collections::hash_map::DefaultHasher;
+pub use std::hash::{Hash, Hasher};
 
 pub type Fingerprint = u64;
 
@@ -15,7 +16,15 @@ pub trait BasicQHT: Filter {
 
     fn in_cell(&self, address: usize, fingerprint: Fingerprint) -> bool;
 
-    fn get_fingerprint(&self, e: Element) -> Fingerprint;
+    fn get_fingerprint(&self, e: impl Hash) -> Fingerprint;
+}
+
+pub fn get_hash(e: impl Hash, base: u64, counter: u64) -> u64 {
+    let mut s = DefaultHasher::new();
+    e.hash(&mut s);
+    base.hash(&mut s);
+    counter.hash(&mut s);
+    s.finish()
 }
 
 #[macro_export]
@@ -57,14 +66,15 @@ macro_rules! impl_basicqht {
             }
 
             /// Obtains an element's fingerprint
-            fn get_fingerprint(&self, e: Element) -> Fingerprint {
-                let mut f = e;
+            fn get_fingerprint(&self, e: impl Hash) -> Fingerprint {
+                //let mut f = e;
                 let mut fingerprint = 0;
+                let mut counter = 0;
 
                 while fingerprint == 0 {
-                    let v = f.get_hash(2);
+                    let v = get_hash(&e, 2, counter);
                     fingerprint = (v % self.pow_fingerprint_size) as Fingerprint;
-                    f.value += 1;
+                    counter += 1;
                 }
                 fingerprint
             }

@@ -1,5 +1,4 @@
-use crate::basicqht::{BasicQHT, Fingerprint};
-use crate::element::Element;
+use crate::basicqht::*;
 use crate::filter::Filter;
 
 pub use rand::rngs::StdRng;
@@ -105,9 +104,9 @@ impl Filter for DQQuotientHashTable {
     /// let e = Element { value: 1234 };
     /// assert!( !f.lookup(e) ); // The filter is empty
     /// ```
-    fn lookup(&self, e: Element) -> bool {
-        let fingerprint = self.get_fingerprint(e);
-        let address = (e.get_hash(1) as usize) % self.n_cells;
+    fn lookup(&self, e: impl Hash) -> bool {
+        let fingerprint = self.get_fingerprint(&e);
+        let address = (get_hash(&e, 1, 0) as usize) % self.n_cells;
         self.in_cell(address, fingerprint)
     }
 
@@ -126,9 +125,9 @@ impl Filter for DQQuotientHashTable {
     /// assert!( !was_present ); // The filter did not previously contain e
     /// ```
 
-    fn insert(&mut self, e: Element) -> bool {
-        let fingerprint = self.get_fingerprint(e);
-        let address = (e.get_hash(1) as usize) % self.n_cells;
+    fn insert(&mut self, e: impl Hash) -> bool {
+        let fingerprint = self.get_fingerprint(&e);
+        let address = (get_hash(&e, 1, 0) as usize) % self.n_cells;
 
         let detected = self.in_cell(address, fingerprint);
 
