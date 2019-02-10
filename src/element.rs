@@ -10,13 +10,3 @@ pub struct Element {
     /// Value held by the element
     pub value: u64,
 }
-
-impl PartialEq for Element {
-    /// Elements can be compared to check if their values are equal
-    fn eq(&self, other: &Self) -> bool {
-        self.value == other.value
-    }
-}
-
-/// Elements can be compared to check if their values are equal
-impl Eq for Element {}

@@ -4,9 +4,12 @@ pub use std::hash::{Hash, Hasher};
 
 pub type Fingerprint = u64;
 
+/// The `BasicQHT` trait collects common functionality between the different QHT flavours
 pub trait BasicQHT: Filter {
+    /// Obtains the fingerprint stored in a given bucket
     fn get_fingerprint_from_bucket(&self, address: usize, bucket_number: usize) -> Fingerprint;
 
+    /// Inserts a fingerprint in a bucket
     fn insert_fingerprint_in_bucket(
         &mut self,
         address: usize,
@@ -14,11 +17,14 @@ pub trait BasicQHT: Filter {
         fingerprint: Fingerprint,
     );
 
+    /// Checks whether a fingerprint is in a cell
     fn in_cell(&self, address: usize, fingerprint: Fingerprint) -> bool;
 
+    /// Obtains the fingerprint of an object
     fn get_fingerprint(&self, e: impl Hash) -> Fingerprint;
 }
 
+/// Returns the hash of (e, base, counter)
 pub fn get_hash(e: impl Hash, base: u64, counter: u64) -> u64 {
     let mut s = DefaultHasher::new();
     e.hash(&mut s);
