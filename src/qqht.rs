@@ -15,10 +15,10 @@ const FINGERPRINT_SIZE_LIMIT: usize = 8;
 
 // --------------------------------------------------------------------------------
 
-/// Quotient Hash Table D ("compact")
+/// Queued Quotient Hash Table ("compact")
 ///
-/// This implements dQHTc, using a dense bitset as the underlying data structure
-pub struct DQuotientHashTable {
+/// This implements qqhtc, using a dense bitset as the underlying data structure
+pub struct QQuotientHashTable {
     /// Number of cells (automatically computed)
     n_cells: usize,
 
@@ -39,8 +39,8 @@ pub struct DQuotientHashTable {
     rng: StdRng,
 }
 
-impl DQuotientHashTable {
-    /// Returns a a newly created `DQuotientHashTable` or panics
+impl QQuotientHashTable {
+    /// Returns a a newly created `QQuotientHashTable` or panics
     ///
     /// This function takes as arguments:
     /// * `memory_size`: allocated memory for the filter, in bits
@@ -50,8 +50,8 @@ impl DQuotientHashTable {
     /// Parameters should be chosen in a consistent way, namely so that `memory_size` >= `n_buckets` * `fingerprint_size`
     /// # Example
     /// ```rust
-    /// use qht::{DQuotientHashTable,BasicQHT};
-    /// let f = DQuotientHashTable::new(1024, 1, 3);
+    /// use qht::{QQuotientHashTable,BasicQHT};
+    /// let f = QQuotientHashTable::new(1024, 1, 3);
     /// ```
     pub fn new(memory_size: usize, n_buckets: usize, fingerprint_size: usize) -> Self {
         // Fingerprint size is limited
@@ -88,12 +88,17 @@ impl DQuotientHashTable {
         }
     }
 
-    // Returns a random bucket
+    /// Returns a random bucket
+    ///
+    /// Used internally by the `Filter` trait to insert an element in a random bucket
     fn get_random_bucket(&mut self) -> usize {
         self.rng.gen_range(0, self.n_buckets)
     }
 
     /// Inserts the fingerprirnt in the first empty bucket
+    /// Returns false if no empty bucket exists and the insertion failed
+    ///
+    /// Used internally by the `Filter` trait to insert an element in the table
     fn insert_empty(&mut self, address: usize, fingerprint: Fingerprint) -> bool {
         for idx in 0..self.n_buckets {
             if self.get_fingerprint_from_bucket(address, idx) == 0 {
@@ -105,15 +110,15 @@ impl DQuotientHashTable {
     }
 }
 
-impl_basicqht!(DQuotientHashTable);
+impl_basicqht!(QQuotientHashTable);
 
-impl Filter for DQuotientHashTable {
+impl Filter for QQuotientHashTable {
     /// Performs a lookup for the provided element
     ///
     /// # Example
     /// ```rust
-    /// use qht::{Element, Filter, DQuotientHashTable, BasicQHT};
-    /// let f = DQuotientHashTable::new(1024, 1, 3);
+    /// use qht::{Element, Filter, QQuotientHashTable, BasicQHT};
+    /// let f = QQuotientHashTable::new(1024, 1, 3);
     /// let e = Element { value: 1234 };
     /// assert!( !f.lookup(e) ); // The filter is empty
     /// ```
@@ -129,8 +134,8 @@ impl Filter for DQuotientHashTable {
     ///
     /// # Example
     /// ```rust
-    /// use qht::{Element,Filter, DQuotientHashTable, BasicQHT};
-    /// let mut f = DQuotientHashTable::new(1024, 1, 3);
+    /// use qht::{Element,Filter, QQuotientHashTable, BasicQHT};
+    /// let mut f = QQuotientHashTable::new(1024, 1, 3);
     /// let e = Element { value: 1234 };
     /// let was_present = f.insert(e);
     /// assert!( f.lookup(e) ); // The filter now contains e

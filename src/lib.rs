@@ -14,8 +14,8 @@ pub use crate::basicqht::BasicQHT;
 pub use crate::element::Element;
 pub use crate::filter::Filter;
 pub use crate::qht::QuotientHashTable;
-pub use crate::qqht::DQuotientHashTable;
-pub use crate::qqhtd::DQQuotientHashTable;
+pub use crate::qqht::QQuotientHashTable;
+pub use crate::qqhtd::QQuotientHashTableD;
 
 #[cfg(test)]
 mod tests {

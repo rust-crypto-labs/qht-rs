@@ -17,7 +17,7 @@ const FINGERPRINT_SIZE_LIMIT: usize = 8;
 
 /// Quotient Hash Table ("compact")
 ///
-/// This implements QHTc, using a dense bitset as the underlying data structure
+/// This implements qhtc, using a dense bitset as the underlying data structure
 pub struct QuotientHashTable {
     /// Number of cells (automatically computed)
     n_cells: usize,
@@ -89,12 +89,17 @@ impl QuotientHashTable {
             rng,
         }
     }
-    /// Returns a randomly chosen bucket
+    /// Returns a random bucket
+    ///
+    /// Used internally by the `Filter` trait to insert an element in a random bucket
     fn get_random_bucket(&mut self) -> usize {
         self.rng.gen_range(0, self.n_buckets)
     }
 
-    /// Inserts the fingerprint in the first empty bucket
+    /// Inserts the fingerprirnt in the first empty bucket
+    /// Returns false if no empty bucket exists and the insertion failed
+    ///
+    /// Used internally by the `Filter` trait to insert an element in the table
     fn insert_empty(&mut self, address: usize, fingerprint: Fingerprint) -> bool {
         for idx in 0..self.n_buckets {
             if self.get_fingerprint_from_bucket(address, idx) == 0 {

@@ -37,7 +37,7 @@ pub fn get_hash(e: impl Hash, base: u64, counter: u64) -> u64 {
 macro_rules! impl_basicqht {
     ($struct_type:ty) => {
         impl BasicQHT for $struct_type {
-            /// Retrieves a fingerprint from a given bucket (provided as an `address` and `bucket_number`
+            /// Retrieves a fingerprint from a given bucket (provided as an `address` and `bucket_number`)
             fn get_fingerprint_from_bucket(
                 &self,
                 address: usize,
@@ -48,7 +48,7 @@ macro_rules! impl_basicqht {
                 self.qht.extract_u64(offset, self.fingerprint_size)
             }
 
-            /// Inserts a fingerprint in a given buffer (provided as an `address` and `bucket_number`
+            /// Inserts a fingerprint in a given buffer (provided as an `address` and `bucket_number`)
             fn insert_fingerprint_in_bucket(
                 &mut self,
                 address: usize,
@@ -73,7 +73,6 @@ macro_rules! impl_basicqht {
 
             /// Obtains an element's fingerprint
             fn get_fingerprint(&self, e: impl Hash) -> Fingerprint {
-                //let mut f = e;
                 let mut fingerprint = 0;
                 let mut counter = 0;
 

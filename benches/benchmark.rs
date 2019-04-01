@@ -11,7 +11,7 @@ mod benchmarks {
     const FINGERPRINT_SIZE: usize = 3;
 
     use criterion::Criterion;
-    use qht::{DQQuotientHashTable, DQuotientHashTable, Element, Filter, QuotientHashTable};
+    use qht::{QQuotientHashTableD, QQuotientHashTable, Element, Filter, QuotientHashTable};
 
     use rand::{rngs::StdRng, FromEntropy, RngCore};
 
@@ -35,14 +35,14 @@ mod benchmarks {
     }
 
     pub fn bench_new_dqht(c: &mut Criterion) {
-        c.bench_function("DQuotientHashTable::new", |b| {
-            b.iter(|| DQuotientHashTable::new(MEMORY_SIZE, NUM_BUCKETS, FINGERPRINT_SIZE))
+        c.bench_function("QQuotientHashTable::new", |b| {
+            b.iter(|| QQuotientHashTable::new(MEMORY_SIZE, NUM_BUCKETS, FINGERPRINT_SIZE))
         });
     }
 
     pub fn bench_new_dqqht(c: &mut Criterion) {
-        c.bench_function("DQQuotientHashTable::new", |b| {
-            b.iter(|| DQQuotientHashTable::new(MEMORY_SIZE, NUM_BUCKETS, FINGERPRINT_SIZE))
+        c.bench_function("QQuotientHashTableD::new", |b| {
+            b.iter(|| QQuotientHashTableD::new(MEMORY_SIZE, NUM_BUCKETS, FINGERPRINT_SIZE))
         });
     }
 
@@ -53,17 +53,17 @@ mod benchmarks {
     }
 
     pub fn bench_insert_dqht(c: &mut Criterion) {
-        let mut f = DQuotientHashTable::new(MEMORY_SIZE, NUM_BUCKETS, FINGERPRINT_SIZE);
+        let mut f = QQuotientHashTable::new(MEMORY_SIZE, NUM_BUCKETS, FINGERPRINT_SIZE);
         let e = Element { value: 1234 };
-        c.bench_function("DQuotientHashTable::insert", move |b| {
+        c.bench_function("QQuotientHashTable::insert", move |b| {
             b.iter(|| f.insert(e))
         });
     }
 
     pub fn bench_insert_dqqht(c: &mut Criterion) {
-        let mut f = DQQuotientHashTable::new(MEMORY_SIZE, NUM_BUCKETS, FINGERPRINT_SIZE);
+        let mut f = QQuotientHashTableD::new(MEMORY_SIZE, NUM_BUCKETS, FINGERPRINT_SIZE);
         let e = Element { value: 1234 };
-        c.bench_function("DQQuotientHashTable::insert", move |b| {
+        c.bench_function("QQuotientHashTableD::insert", move |b| {
             b.iter(|| f.insert(e))
         });
     }
@@ -75,17 +75,17 @@ mod benchmarks {
     }
 
     pub fn bench_lookup_dqht(c: &mut Criterion) {
-        let f = DQuotientHashTable::new(MEMORY_SIZE, NUM_BUCKETS, FINGERPRINT_SIZE);
+        let f = QQuotientHashTable::new(MEMORY_SIZE, NUM_BUCKETS, FINGERPRINT_SIZE);
         let e = Element { value: 1234 };
-        c.bench_function("DQuotientHashTable::lookup", move |b| {
+        c.bench_function("QQuotientHashTable::lookup", move |b| {
             b.iter(|| f.lookup(e))
         });
     }
 
     pub fn bench_lookup_dqqht(c: &mut Criterion) {
-        let f = DQQuotientHashTable::new(MEMORY_SIZE, NUM_BUCKETS, FINGERPRINT_SIZE);
+        let f = QQuotientHashTableD::new(MEMORY_SIZE, NUM_BUCKETS, FINGERPRINT_SIZE);
         let e = Element { value: 1234 };
-        c.bench_function("DQQuotientHashTable::lookup", move |b| {
+        c.bench_function("QQuotientHashTableD::lookup", move |b| {
             b.iter(|| f.lookup(e))
         });
     }

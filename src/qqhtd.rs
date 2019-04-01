@@ -15,10 +15,10 @@ const FINGERPRINT_SIZE_LIMIT: usize = 8;
 
 // --------------------------------------------------------------------------------
 
-/// qQuotient Hash Table D ("compact")
+/// QQuotient Hash Table Duplicates ("compact")
 ///
-/// This implements dqQHTc, using a dense bitset as the underlying data structure
-pub struct DQQuotientHashTable {
+/// This implements qqhtdc, using a dense bitset as the underlying data structure
+pub struct QQuotientHashTableD {
     /// Number of cells (automatically computed)
     n_cells: usize,
 
@@ -36,8 +36,8 @@ pub struct DQQuotientHashTable {
     qht: DenseBitSetExtended,
 }
 
-impl DQQuotientHashTable {
-    /// Returns a a newly created `DQQuotientHashTable` or panics
+impl QQuotientHashTableD {
+    /// Returns a a newly created `QQuotientHashTableD` or panics
     ///
     /// This function takes as arguments:
     /// * `memory_size`: allocated memory for the filter, in bits
@@ -48,8 +48,8 @@ impl DQQuotientHashTable {
     ///
     /// # Example
     /// ```rust
-    /// use qht::{DQQuotientHashTable,BasicQHT};
-    /// let f = DQQuotientHashTable::new(1024, 1, 3);
+    /// use qht::{QQuotientHashTableD,BasicQHT};
+    /// let f = QQuotientHashTableD::new(1024, 1, 3);
     /// ```
     pub fn new(memory_size: usize, n_buckets: usize, fingerprint_size: usize) -> Self {
         if fingerprint_size > FINGERPRINT_SIZE_LIMIT {
@@ -81,6 +81,9 @@ impl DQQuotientHashTable {
         }
     }
 
+    /// Inserts the provided fingerprint in the lastbucket of the table
+    ///
+    /// Used internally by the `Filter` trait to insert elements in the table
     fn insert_fingerprint_in_last_bucket(&mut self, address: usize, fingerprint: Fingerprint) {
         for prev in 0..(self.n_buckets - 1) {
             let idx = prev + 1;
@@ -92,15 +95,15 @@ impl DQQuotientHashTable {
     }
 }
 
-impl_basicqht!(DQQuotientHashTable);
+impl_basicqht!(QQuotientHashTableD);
 
-impl Filter for DQQuotientHashTable {
+impl Filter for QQuotientHashTableD {
     /// Performs a lookup for the provided element
     ///
     /// # Example
     /// ```rust
-    /// use qht::{Element, Filter, DQQuotientHashTable, BasicQHT};
-    /// let f = DQQuotientHashTable::new(1024, 1, 3);
+    /// use qht::{Element, Filter, QQuotientHashTableD, BasicQHT};
+    /// let f = QQuotientHashTableD::new(1024, 1, 3);
     /// let e = Element { value: 1234 };
     /// assert!( !f.lookup(e) ); // The filter is empty
     /// ```
@@ -117,8 +120,8 @@ impl Filter for DQQuotientHashTable {
     /// Note: The new element is inserted in the last bucket (not a random bucket)
     /// # Example
     /// ```rust
-    /// use qht::{Element,Filter, DQQuotientHashTable, BasicQHT};
-    /// let mut f = DQQuotientHashTable::new(1024, 1, 3);
+    /// use qht::{Element,Filter, QQuotientHashTableD, BasicQHT};
+    /// let mut f = QQuotientHashTableD::new(1024, 1, 3);
     /// let e = Element { value: 1234 };
     /// let was_present = f.insert(e);
     /// assert!( f.lookup(e) ); // The filter now contains e
