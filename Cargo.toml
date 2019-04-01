@@ -1,5 +1,5 @@
 [package]
-name = "qht-rs"
+name = "qht"
 version = "0.1.0"
 authors = ["Rémi Géraud-Stewart <remi.geraud@ens.fr>", "Stanislas Plessia <stplessia@gmail.com>"]
 description = "Implementation of Quotient Hash Tables variants QHTc, QQHTc, QQHTDc"
@@ -11,10 +11,10 @@ categories = ["algorithms", "data-structures", "encoding"]
 readme = "README.md"
 repository = "https://github.com/ovheurdrive/qht-rs"
 homepage = "https://github.com/ovheurdrive/qht-rs"
-documentation = "https://docs.rs/qht-rs"
+documentation = "https://docs.rs/qht"
 
 [badges]
-travis-ci = { repository = "ovheurdrive/rust-dense-bitset" }
+travis-ci = { repository = "ovheurdrive/qht-rs" }
 
 [dependencies]
 rand = "0.6.1"
