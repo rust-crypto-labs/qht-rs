@@ -1,6 +1,7 @@
 # qht-rs
 [![Latest version](https://img.shields.io/crates/v/qht-rs.svg)](https://crates.io/crates/qht-rs)
 [![Documentation](https://docs.rs/qht-rs/badge.svg)](https://docs.rs/qht-rs)
+[![Build Status](https://travis-ci.org/ovheurdrive/qht-rs.svg?branch=master)](https://travis-ci.org/ovheurdrive/qht-rs)
 ![Long time support rustc version](https://img.shields.io/badge/rustc-1.31%2B-green.svg)
 ![License](https://img.shields.io/badge/License-MIT-blue.svg)
 
