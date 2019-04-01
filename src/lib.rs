@@ -16,13 +16,3 @@ pub use crate::filter::Filter;
 pub use crate::qht::QuotientHashTable;
 pub use crate::qqht::QQuotientHashTable;
 pub use crate::qqhtd::QQuotientHashTableD;
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_new_qht() {
-        let _qht = QuotientHashTable::new(1025, 1, 3);
-    }
-}
