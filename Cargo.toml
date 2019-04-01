@@ -1,10 +1,22 @@
 [package]
-
-name = "qht"
+name = "qht-rs"
 version = "0.1.0"
-authors = ["Rémi Géraud-Stewart <remi.geraud@ens.fr>"]
-description = "Implementation of Quotient Hash Tables variants QHTc, QHTdc, qQHTdc"
+authors = ["Rémi Géraud-Stewart <remi.geraud@ens.fr>", "Stanislas Plessia <stplessia@gmail.com>"]
+description = "Implementation of Quotient Hash Tables variants QHTc, QQHTc, QQHTDc"
 license = "MIT"
+edition = "2018"
+keywords = ["algorithm", "data structure", "duplicate detection"]
+
+readme = "README.md"
+repository = "https://github.com/ovheurdrive/qht-rs"
+homepage = "https://github.com/ovheurdrive/qht-rs"
+documentation = "https://docs.rs/qht-rs"
+
+categories = ["algorithms", "data-structures", "encoding"]
+description = "Efficient and compact bitsets for Rust."
+
+[badges]
+travis-ci = { repository = "ovheurdrive/rust-dense-bitset" }
 
 [dependencies]
 rand = "0.6.1"
