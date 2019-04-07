@@ -5,7 +5,7 @@ authors = ["Rémi Géraud-Stewart <remi.geraud@ens.fr>", "Stanislas Plessia <stp
 description = "Implementation of Quotient Hash Tables variants QHTc, QQHTc, QQHTDc"
 license = "MIT"
 edition = "2018"
-keywords = ["algorithm", "data structure", "duplicate detection"]
+keywords = ["algorithm", "data-structures", "duplicate", "detection"]
 categories = ["algorithms", "data-structures", "encoding"]
 
 readme = "README.md"
